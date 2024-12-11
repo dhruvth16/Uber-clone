@@ -3,7 +3,7 @@ const userService = require("../services/user.service.js");
 const { validationResult } = require("express-validator");
 const expireTokenModel = require("../models/expireToken.model.js");
 
-module.exports.register = async (req, res) => {
+exports.registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -32,7 +32,7 @@ module.exports.register = async (req, res) => {
   res.status(201).json({ token, user });
 };
 
-module.exports.login = async (req, res) => {
+exports.loginUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -61,11 +61,11 @@ module.exports.login = async (req, res) => {
   }
 };
 
-module.exports.getUserProfile = async (req, res) => {
+exports.getUserProfile = async (req, res) => {
   res.status(200).json({ user: req.user });
 };
 
-module.exports.logout = async (req, res) => {
+exports.logoutUser = async (req, res) => {
   res.clearCookie("token");
   const token = req.cookies.token || req.headers.authorization.split(" ")[1];
   await expireTokenModel.create({ token });

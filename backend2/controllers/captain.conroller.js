@@ -3,7 +3,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-exports.register = async (req, res) => {
+exports.registerCaptain = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
   }
 };
 
-module.exports.login = async (req, res) => {
+exports.loginCaptain = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -55,7 +55,7 @@ module.exports.login = async (req, res) => {
   }
 };
 
-module.exports.getCaptainProfile = async (req, res) => {
+exports.getCaptainProfile = async (req, res) => {
   try {
     const captain = await captainModel.findById(req.captain._id);
     res.status(200).json({ captain });
@@ -64,7 +64,7 @@ module.exports.getCaptainProfile = async (req, res) => {
   }
 };
 
-module.exports.logout = async (req, res) => {
+exports.logoutCaptain = async (req, res) => {
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
   await blackListTokenModel.create({ token });
   res.clearCookie("token");
