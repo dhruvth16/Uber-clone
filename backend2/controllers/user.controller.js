@@ -22,12 +22,13 @@ exports.registerUser = async (req, res) => {
   const user = await userService.createUser({
     firstname: fullname.firstname,
     lastname: fullname.lastname,
-    email,
+    email: email,
     password: hashedPassword,
   });
 
   const token = user.generateAuthToken();
-  console.log(user);
+
+  console.log(user, token);
 
   res.status(201).json({ token, user });
 };
@@ -41,22 +42,20 @@ exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await userModel.findOne({ email }).select("+password");
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    // Ensure user is found
+    const user = await userModel.findOne({ email });
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    const isPasswordMatch = user.comparePassword(password);
-
-    if (!isPasswordMatch) {
-      return res.status(400).json({ message: "Invalid password" });
-    }
-
+    // Generate token
     const token = user.generateAuthToken();
 
-    res.status(200).json({ token });
+    // Send token
+    res.cookie("token", token, { httpOnly: true });
+    res.status(200).json({ message: "Login successful", token });
   } catch (error) {
+    console.error("Login Error:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -68,6 +67,7 @@ exports.getUserProfile = async (req, res) => {
 exports.logoutUser = async (req, res) => {
   res.clearCookie("token");
   const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  console.log(token);
   await expireTokenModel.create({ token });
   res.status(200).json({ message: "Logout successfully" });
 };

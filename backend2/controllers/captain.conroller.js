@@ -1,7 +1,8 @@
-const captainModel = require("../models/captain.model");
+const captainModel = require("../models/captain.model.js");
 const { validationResult } = require("express-validator");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const expireTokenModel = require("../models/expireToken.model.js");
+const captainService = require("../services/captain.service.js");
+const VehicleType = require("../enums/vehicleType.enum.js");
 
 exports.registerCaptain = async (req, res) => {
   const errors = validationResult(req);
@@ -9,28 +10,45 @@ exports.registerCaptain = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, password, fullname, vehicle } = req.body;
+  const { fullname, email, password, vehicle } = req.body;
 
-  const hashedPassword = await captainModel.hashPassword(password);
+  console.log("VehicleType Enum:", VehicleType);
+  console.log("Provided vehicleType:", vehicle.vehicleType);
+  console.log("Allowed Values:", Object.values(VehicleType));
 
-  try {
-    const captain = await captainService.createCaptain({
-      firstname: fullname.firstname,
-      lastname: fullname.lastname,
-      email,
-      password: hashedPassword,
-      color: vehicle.color,
-      plate: vehicle.plate,
-      capacity: vehicle.capacity,
-      vehicleType: vehicle.vehicleType,
+  if (!Object.values(VehicleType).includes(vehicle.vehicleType)) {
+    return res.status(400).json({
+      message: `Invalid vehicleType. Allowed values are: ${Object.values(
+        VehicleType
+      ).join(", ")}`,
     });
-
-    const token = captain.generateAuthToken();
-
-    res.status(201).json({ token, captain });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
+
+  const isCaptainAlreadyExists = await captainModel.findOne({ email });
+
+  if (isCaptainAlreadyExists) {
+    return res.status(400).json({ message: "Captain already exist" });
+  }
+  console.log("Hereeee");
+  console.log(password);
+  const hashedPassword = await captainModel.hashPassword(password);
+  console.log(hashedPassword);
+
+  const captain = await captainService.createCaptain({
+    firstname: fullname.firstname,
+    lastname: fullname.lastname,
+    email: email,
+    password: hashedPassword,
+    color: vehicle.color,
+    plate: vehicle.plate,
+    capacity: vehicle.capacity,
+    vehicleType: vehicle.vehicleType,
+  });
+
+  const token = captain.generateAuthToken();
+  console.log(captain);
+
+  res.status(201).json({ token, captain });
 };
 
 exports.loginCaptain = async (req, res) => {
@@ -38,35 +56,50 @@ exports.loginCaptain = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
+
   const { email, password } = req.body;
+
   try {
+    // Ensure user is found
     const captain = await captainModel.findOne({ email }).select("+password");
+
     if (!captain) {
       return res.status(404).json({ message: "Captain not found" });
     }
-    const isPasswordMatch = captain.comparePassword(password);
+
+    // Debug logging
+    console.log("Stored Password Hash:", captain.password);
+    console.log("Provided Password:", password);
+
+    // Ensure comparePassword method is correctly implemented
+    if (!captain.comparePassword) {
+      return res
+        .status(500)
+        .json({ message: "Authentication method not available" });
+    }
+
+    const isPasswordMatch = await captain.comparePassword(password);
+
     if (!isPasswordMatch) {
       return res.status(400).json({ message: "Invalid password" });
     }
+
     const token = captain.generateAuthToken();
+    res.cookie("token", token, { httpOnly: true });
     res.status(200).json({ token });
   } catch (error) {
+    console.error("Login Error:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 exports.getCaptainProfile = async (req, res) => {
-  try {
-    const captain = await captainModel.findById(req.captain._id);
-    res.status(200).json({ captain });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  res.status(200).json({ user: req.user });
 };
 
 exports.logoutCaptain = async (req, res) => {
-  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
-  await blackListTokenModel.create({ token });
   res.clearCookie("token");
+  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  await expireTokenModel.create({ token });
   res.status(200).json({ message: "Logout successfully" });
 };

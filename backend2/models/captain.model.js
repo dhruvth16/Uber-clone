@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const VehicleType = require("../enums/vehicleType.enum.js");
 
 const captainSchema = new mongoose.Schema({
   fullname: {
@@ -47,7 +48,7 @@ const captainSchema = new mongoose.Schema({
     },
     vehicleType: {
       type: String,
-      enum: ["car", "bike", "auto"],
+      enum: Object.values(VehicleType),
       required: true,
     },
   },
@@ -61,17 +62,18 @@ const captainSchema = new mongoose.Schema({
   },
 });
 
-captainSchema.methods.generateAuthToken = () => {
+captainSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
   return token;
 };
 
-captainSchema.methods.comparePassword = async (password) => {
-  return await bcrypt.compare(password, this.password);
+captainSchema.methods.comparePassword = async function (comparePassword) {
+  return await bcrypt.compare(comparePassword, this.password);
 };
 
-captainSchema.statics.hashpassword = async (password) => {
-  return await bcrypt.hash(password, 10);
+captainSchema.statics.hashPassword = async function (password) {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
 };
 
 const captainModel = mongoose.model("captain", captainSchema);
