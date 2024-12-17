@@ -31,7 +31,7 @@ function CaptainProtectedWrapper({ children }) {
         localStorage.removeItem("token");
         navigate("/captainLogin");
       });
-  }, [token]);
+  }, [token, navigate, setCaptain]);
 
   if (isLoading) {
     return <div>Loading...</div>;

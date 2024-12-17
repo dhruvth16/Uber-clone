@@ -15,7 +15,6 @@ function UserProtectedWrapper({ children }) {
       navigate("/userLogin");
       return null;
     }
-    console.log("Token: ", token);
     axios
       .get(`${import.meta.env.VITE_BASE_URL}/users/user-profile`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -30,7 +29,7 @@ function UserProtectedWrapper({ children }) {
         console.error(error);
         navigate("/userLogin");
       });
-  }, [token]);
+  }, [token, navigate, setUser]);
 
   if (isLoading) {
     return <div>Loading...</div>;

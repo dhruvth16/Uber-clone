@@ -16,6 +16,7 @@ import UserProtectedWrapper from "./pages/UserProtectedWrapper.jsx";
 import CaptainProtectedWrapper from "./pages/CaptainProtectedWrapper.jsx";
 import UserLogout from "./pages/UserLogout.jsx";
 import CaptainLogout from "./pages/CaptainLogout.jsx";
+import Riding from "./pages/Riding.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -28,6 +29,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/captainLogin" element={<CaptainLogin />} />
           <Route path="/userSignup" element={<UserSignup />} />
           <Route path="/captainSignup" element={<CaptainSignup />} />
+          <Route path="/riding" element={<Riding />} />
           <Route
             path="/home"
             element={
