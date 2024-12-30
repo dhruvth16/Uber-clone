@@ -8,7 +8,7 @@ const expireTokenSchema = new mongoose.Schema({
   expireAt: {
     type: Date,
     default: Date.now,
-    expireAt: "1d",
+    expires: 3600,
   },
 });
 

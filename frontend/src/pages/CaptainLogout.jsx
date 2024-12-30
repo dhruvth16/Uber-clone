@@ -23,7 +23,7 @@ function CaptainLogout() {
       });
   }, [token, navigate]);
 
-  return <div>CaptainLogput</div>;
+  return <div>CaptainLogout</div>;
 }
 
 export default CaptainLogout;

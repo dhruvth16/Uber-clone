@@ -12,10 +12,6 @@ exports.registerCaptain = async (req, res) => {
 
   const { fullname, email, password, vehicle } = req.body;
 
-  console.log("VehicleType Enum:", VehicleType);
-  console.log("Provided vehicleType:", vehicle.vehicleType);
-  console.log("Allowed Values:", Object.values(VehicleType));
-
   if (!Object.values(VehicleType).includes(vehicle.vehicleType)) {
     return res.status(400).json({
       message: `Invalid vehicleType. Allowed values are: ${Object.values(
@@ -29,10 +25,7 @@ exports.registerCaptain = async (req, res) => {
   if (isCaptainAlreadyExists) {
     return res.status(400).json({ message: "Captain already exist" });
   }
-  console.log("Hereeee");
-  console.log(password);
   const hashedPassword = await captainModel.hashPassword(password);
-  console.log(hashedPassword);
 
   const captain = await captainService.createCaptain({
     firstname: fullname.firstname,
@@ -66,10 +59,6 @@ exports.loginCaptain = async (req, res) => {
     if (!captain) {
       return res.status(404).json({ message: "Captain not found" });
     }
-
-    // Debug logging
-    console.log("Stored Password Hash:", captain.password);
-    console.log("Provided Password:", password);
 
     // Ensure comparePassword method is correctly implemented
     if (!captain.comparePassword) {

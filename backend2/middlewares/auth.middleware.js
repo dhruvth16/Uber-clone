@@ -10,7 +10,6 @@ const verifyToken = async (token) => {
 
   // Check if the token is expired or revoked
   const isTokenExpired = await ExpireToken.findOne({ token });
-  console.log(isTokenExpired);
   if (isTokenExpired) {
     throw new Error("Token is expired or revoked");
   }
@@ -18,7 +17,6 @@ const verifyToken = async (token) => {
   // Decode the JWT
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded payload:", decoded);
     return decoded; // Should include `_id`
   } catch (error) {
     if (error.name === "TokenExpiredError") {
