@@ -1,5 +1,5 @@
 // USER DASHBOARD
-import { useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import "remixicon/fonts/remixicon.css";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -8,6 +8,11 @@ import SelectRide from "../../components/SelectRide";
 import ConfirmRide from "../../components/ConfirmRide";
 import LookingForDriver from "../../components/LookingForDriver";
 import RideDetails from "../../components/RideDetails";
+import { SocketIOContext } from "../context/SocketIOContext";
+import { UserDataContext } from "../context/UserDataContext";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import LiveTracking from "./LiveTracking";
 
 function Home() {
   const [currLocation, setCurrLocation] = useState("");
@@ -17,6 +22,132 @@ function Home() {
   const [confirmRide, setConfirmRide] = useState(false);
   const [vehicleFound, setVehicleFound] = useState(false);
   const [rideDetails, setRideDetails] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [fare, setFare] = useState(0);
+  const [activeInput, setActiveInput] = useState("pickup");
+  const [activeVehicleFound, setActiveVehicleFound] = useState("car");
+  const [ride, setRide] = useState(null);
+
+  const navigate = useNavigate();
+  const { sendMessage, newSocket } = useContext(SocketIOContext);
+  const { user } = useContext(UserDataContext);
+
+  useEffect(() => {
+    newSocket.onAny((event, ...args) => {
+      console.log(`Event received: ${event}`, args);
+    });
+
+    return () => {
+      newSocket.offAny();
+    };
+  }, [newSocket]);
+
+  useEffect(() => {
+    // console.log("User: ", user);
+    sendMessage("join", {
+      userType: "user",
+      userId: user._id,
+    });
+  }, [sendMessage, user._id]);
+
+  useEffect(() => {
+    newSocket.on("ride-accepted", (data) => {
+      setRideDetails(true);
+      setVehicleFound(false);
+      setRide(data);
+    });
+
+    newSocket.on("ride-started", (data) => {
+      setRideDetails(false);
+      navigate("/riding", { state: { data } });
+    });
+
+    newSocket.on("ride-cancelled", () => {
+      setRideDetails(false);
+    });
+
+    return () => {
+      newSocket.off("ride-accepted");
+      newSocket.off("ride-finished");
+      newSocket.off("ride-started");
+      newSocket.off("ride-cancelled");
+    };
+  }, [newSocket, navigate]);
+
+  const fetchSuggestions = async (query, type) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+        {
+          params: {
+            input: query,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // console.log("Response: ", response.data.suggestions);
+      setSuggestions(response.data.suggestions || []);
+      setActiveInput(type);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+    }
+  };
+
+  const handleLocationSelect = (location) => {
+    if (activeInput === "pickup") {
+      setCurrLocation(location);
+    } else {
+      setDestLocation(location);
+    }
+    setSuggestions([]);
+  };
+
+  const fetchFare = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
+        {
+          params: {
+            pickupAddress: currLocation,
+            destinationAddress: destLocation,
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // console.log("Fare: ", response.data);
+      setFare(response.data.fare);
+    } catch (error) {
+      console.error("Error fetching fare:", error);
+    }
+  };
+
+  const createRideDetails = async () => {
+    console.log(currLocation, destLocation, activeVehicleFound);
+    console.log(localStorage.getItem("token"));
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/create`,
+        {
+          pickupAddress: currLocation,
+          destinationAddress: destLocation,
+          vehicleType: activeVehicleFound,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log("Ride Details: ", response.data);
+    } catch (error) {
+      console.error("Error creating ride details:", error);
+    }
+  };
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -116,14 +247,11 @@ function Home() {
   return (
     <>
       <div className="h-screen bg-red-200 w-full">
-        <h1 className="absolute left-4 top-3 font-semibold text-2xl">Uber</h1>
+        <h1 className="absolute z-10 left-4 top-3 font-semibold text-2xl">
+          Uber
+        </h1>
 
-        <img
-          className="h-screen w-full object-cover"
-          src="https://cdn.dribbble.com/users/914217/screenshots/4506553/media/7be2be6f43f64c27946d1068a602ece1.gif"
-          alt=""
-        />
-        {/* onclick make the form top-0 and the div height-0 */}
+        <LiveTracking />
         <form
           ref={inputRef}
           onSubmit={(e) => submitHandler(e)}
@@ -146,53 +274,88 @@ function Home() {
           <div>
             <div className="h-2 w-2 absolute left-[31px] top-[77px] bg-black rounded-full"></div>
             <input
-              onClick={() => setInputPanelOpen(true)}
+              onClick={() => {
+                setInputPanelOpen(true);
+                setActiveInput("pickup");
+              }}
               value={currLocation}
-              onChange={(e) => setCurrLocation(e.target.value)}
+              onChange={(e) => {
+                setCurrLocation(e.target.value);
+                fetchSuggestions(e.target.value, "pickup");
+              }}
               className="bg-gray-200 px-8 py-2 rounded-lg  placeholder:text-sm placeholder:text-slate-500"
               type="text"
               placeholder="Enter your pick-up location"
+              required
             />
           </div>
           <div>
             <div className="h-2 w-2 absolute left-[31px] top-[138px] border-2 border-gray-500"></div>
             <input
-              onClick={() => setInputPanelOpen(true)}
+              onClick={() => {
+                setInputPanelOpen(true);
+                setActiveInput("destination");
+              }}
               value={destLocation}
-              onChange={(e) => setDestLocation(e.target.value)}
+              onChange={(e) => {
+                setDestLocation(e.target.value);
+                fetchSuggestions(e.target.value, "destination");
+              }}
               className="bg-gray-200 px-8 py-2 rounded-lg placeholder:text-sm placeholder:text-slate-500"
               type="text"
               placeholder="Enter your destination"
+              required
             />
           </div>
         </form>
+
         <div
           ref={panelRef}
           className="h-[0%] w-full bg-white absolute bottom-0 hidden"
         >
           <SearchLocationPanel
+            suggestions={suggestions}
+            onSelectLocation={handleLocationSelect}
             setSelectedRide={setSelectedRide}
             setInputPanelOpen={setInputPanelOpen}
+            fetchFare={fetchFare}
+            currLocation={currLocation}
+            destLocation={destLocation}
           />
         </div>
+
         <SelectRide
           rideRef={rideRef}
           setSelectedRide={setSelectedRide}
           setConfirmRide={setConfirmRide}
           confirmRideRef={confirmRideRef}
+          currLocation={currLocation}
+          destLocation={destLocation}
+          fare={fare}
+          setActiveVehicleFound={setActiveVehicleFound}
         />
         <ConfirmRide
           confirmRideRef={confirmRideRef}
           setConfirmRide={setConfirmRide}
           setVehicleFound={setVehicleFound}
+          currLocation={currLocation}
+          destLocation={destLocation}
+          fare={fare}
+          activeVehicleFound={activeVehicleFound}
+          createRideDetails={createRideDetails}
         />
         <LookingForDriver
           vehicleFoundRef={vehicleFoundRef}
           setVehicleFound={setVehicleFound}
+          currLocation={currLocation}
+          destLocation={destLocation}
+          fare={fare}
+          activeVehicleFound={activeVehicleFound}
         />
         <RideDetails
-          rideDetailsRef={rideDetails}
+          rideDetailsRef={rideDetailsRef}
           setRideDetails={setRideDetails}
+          ride={ride}
         />
       </div>
     </>

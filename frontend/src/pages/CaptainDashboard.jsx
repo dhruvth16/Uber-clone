@@ -1,17 +1,102 @@
 import { Link } from "react-router";
 import RidePopUp from "../../components/RidePopUp";
-import { useRef, useState } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import AcceptRide from "../../components/AcceptRide";
+import { CaptainDataContext } from "../context/CaptainDataContext";
+import { SocketIOContext } from "../context/SocketIOContext";
+import axios from "axios";
+import LiveTracking from "./LiveTracking";
 
 function CaptainDashboard() {
   const [acceptRide, setAcceptRide] = useState(false);
-  const [ignoreRide, setIgnoreRide] = useState(true); // later make it false initially
+  const [ignoreRide, setIgnoreRide] = useState(false); // later make it false initially
   const [ridePopUp, setRidePopUp] = useState(false);
+  const [rideConfirmed, setRideConfirmed] = useState(null);
+  const [ride, setRide] = useState(null);
   const acceptRideRef = useRef(null);
   const ignoreRideRef = useRef(null);
   const ridePopUpRef = useRef(null);
+
+  const { captain } = useContext(CaptainDataContext);
+  const { sendMessage, newSocket } = useContext(SocketIOContext);
+  // console.log(captain.fullname.firstname);
+
+  useEffect(() => {
+    // console.log("Captain: ", captain);
+    sendMessage("join", { userType: "captain", userId: captain._id });
+
+    const updateLocation = () => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const location = {
+          lng: position.coords.longitude,
+          ltd: position.coords.latitude,
+        };
+        // console.log("Location: ", location, "Captain: ", captain._id);
+        sendMessage("update-location-captain", {
+          captainId: captain._id,
+          location,
+        });
+      });
+    };
+    // const locationInterval = setInterval(updateLocation, 10000);
+    updateLocation();
+  }, [sendMessage, captain._id]);
+
+  newSocket.on("new-ride", (data) => {
+    console.log("New Ride: ", data);
+    setRide(data);
+    setIgnoreRide(true);
+  });
+
+  const confirmRide = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/accept-ride`,
+        {
+          rideId: ride._id,
+          captain: captain._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // console.log("Ride Confirmed: ", response.data.ride);
+      if (response.status === 200) {
+        setAcceptRide(true);
+        setRidePopUp(true);
+        setRideConfirmed(response.data.ride);
+      }
+    } catch (error) {
+      console.error("Error in confirmRide:", error);
+    }
+  };
+
+  const cancelRide = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/rides/cancel-ride`,
+        {
+          params: {
+            rideId: ride._id,
+            captain: captain._id,
+          },
+
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setIgnoreRide(false);
+      }
+    } catch (error) {
+      console.error("Error in rideCancelled:", error);
+    }
+  };
 
   useGSAP(() => {
     if (acceptRide) {
@@ -58,7 +143,7 @@ function CaptainDashboard() {
   return (
     <>
       <div className="h-screen w-full">
-        <div className="h-12 absolute p-2 flex items-center gap-4 justify-between w-full">
+        <div className="h-12 absolute z-10 p-2 flex items-center gap-4 justify-between w-full">
           <h3 className="font-semibold text-xl">Uber</h3>
           <Link
             to="/captainLogin"
@@ -67,14 +152,10 @@ function CaptainDashboard() {
             <i className="ri-arrow-left-line text-lg"></i>
           </Link>
         </div>
-        <div className="h-1/2 w-full">
-          <img
-            className="h-full w-full object-cover"
-            src="https://cdn.dribbble.com/users/914217/screenshots/4506553/media/7be2be6f43f64c27946d1068a602ece1.gif"
-            alt=""
-          />
+        <div className="h-2/3 w-full">
+          <LiveTracking rideConfirmed={rideConfirmed} />
         </div>
-        <div className="h-1/2 absolute p-2 bg-white shadow-inner shadow-gray-200 rounded-t-lg w-full">
+        <div className="h-1/3 absolute p-2 bg-white shadow-inner shadow-gray-200 rounded-t-lg w-full">
           <div className="absolute h-14 w-14 top-[-35px] bg-gray-100 flex items-center justify-center rounded-full">
             <img
               className="h-10 w-10 rounded-full"
@@ -87,8 +168,10 @@ function CaptainDashboard() {
           </p>
           <div className="flex items-center justify-between bg-gray-50 p-1 rounded-lg">
             <div>
-              <p className="font-medium text-sm">Carlsen</p>
-              <p className="text-sm font-semibold">DL 1A 0001</p>
+              <p className="font-medium text-sm">
+                {captain.fullname.firstname}
+              </p>
+              <p className="text-sm font-semibold">{captain.vehicle.plate}</p>
             </div>
             <div>
               <p className="text-sm font-semibold">
@@ -124,12 +207,16 @@ function CaptainDashboard() {
           setAcceptRide={setAcceptRide}
           setIgnoreRide={setIgnoreRide}
           ignoreRideRef={ignoreRideRef}
+          ride={ride}
+          confirmRide={confirmRide}
+          cancelRide={cancelRide}
         />
         <AcceptRide
           acceptRideRef={acceptRideRef}
           setAcceptRide={setAcceptRide}
           setIgnoreRide={setIgnoreRide}
           setRidePopUp={setRidePopUp}
+          rideConfirmed={rideConfirmed}
         />
       </div>
     </>

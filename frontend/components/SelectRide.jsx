@@ -19,6 +19,7 @@ function SelectRide(props) {
             onClick={() => {
               props.setConfirmRide(true);
               props.setSelectedRide(false);
+              props.setActiveVehicleFound("car");
             }}
             className="flex items-center gap-2 border-2 active:border-black p-1 rounded-lg"
           >
@@ -35,7 +36,9 @@ function SelectRide(props) {
               </div>
               <p className=" text-xs">2 mins away</p>
               <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-500 font-semibold">$15</p>
+                <p className="text-sm text-black font-bold">
+                  ₹{props.fare.car}
+                </p>
                 <h3 className="flex items-center gap-1 ">
                   <i className="ri-user-3-line text-sm"></i>
                   <span>4</span>
@@ -45,7 +48,11 @@ function SelectRide(props) {
           </div>
         </div>
         <div
-          onClick={() => props.setConfirmRide(true)}
+          onClick={() => {
+            props.setConfirmRide(true);
+            props.setSelectedRide(false);
+            props.setActiveVehicleFound("auto");
+          }}
           className="w-full active:border-black border-2 rounded-lg p-1"
         >
           <div className="flex items-center gap-2">
@@ -62,7 +69,9 @@ function SelectRide(props) {
               </div>
               <p className=" text-xs">2 mins away</p>
               <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-500 font-semibold">$10</p>
+                <p className="text-sm text-black font-bold">
+                  ₹{props.fare.auto}
+                </p>
                 <h3 className="flex items-center gap-1 ">
                   <i className="ri-user-3-line text-sm"></i>
                   <span>3</span>
@@ -72,7 +81,11 @@ function SelectRide(props) {
           </div>
         </div>
         <div
-          onClick={() => props.setConfirmRide(true)}
+          onClick={() => {
+            props.setConfirmRide(true);
+            props.setSelectedRide(false);
+            props.setActiveVehicleFound("bike");
+          }}
           className="w-full  active:border-black border-2 rounded-lg p-1"
         >
           <div className="flex items-center gap-2">
@@ -89,7 +102,9 @@ function SelectRide(props) {
               </div>
               <p className=" text-xs">2 mins away</p>
               <div className="flex items-center gap-2">
-                <p className="text-sm text-gray-500 font-semibold">$5</p>
+                <p className="text-sm text-black font-bold">
+                  ₹{props.fare.bike}
+                </p>
                 <h3 className="flex items-center gap-1 ">
                   <i className="ri-user-3-line text-sm"></i>
                   <span>1</span>
@@ -113,6 +128,8 @@ SelectRide.propTypes = {
   ]),
   setSelectedRide: PropTypes.func.isRequired,
   setConfirmRide: PropTypes.func.isRequired,
+  fare: PropTypes.number.isRequired,
+  setActiveVehicleFound: PropTypes.func.isRequired,
 };
 
 export default SelectRide;

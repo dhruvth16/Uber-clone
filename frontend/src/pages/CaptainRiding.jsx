@@ -3,10 +3,18 @@ import gsap from "gsap";
 import { useRef, useState } from "react";
 import { Link } from "react-router";
 import FinishRide from "../../components/FinishRide";
+import { useNavigate } from "react-router";
+import axios from "axios";
+import { useLocation } from "react-router";
+import LiveTracking from "./LiveTracking";
 
 const CaptainRiding = () => {
   const [rideComplete, setRideComplete] = useState(false);
   const rideCompleteRef = useRef(null);
+  const location = useLocation();
+  const ride = location.state.riding || {};
+  console.log("Ride: ", ride);
+  const navigate = useNavigate();
 
   useGSAP(() => {
     if (rideComplete) {
@@ -22,6 +30,29 @@ const CaptainRiding = () => {
     }
   }, [rideComplete]);
 
+  const finishRide = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/rides/finish-ride`,
+        {
+          rideId: ride.ride._id,
+          captain: ride.ride.captain._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // console.log(response.data);
+      if (response.status === 200) {
+        navigate("/captainDashboard");
+      }
+    } catch (error) {
+      console.error("Error in finishRide:", error);
+    }
+  };
+
   return (
     <>
       <div className="h-screen w-full">
@@ -35,11 +66,7 @@ const CaptainRiding = () => {
           </Link>
         </div>
         <div className="h-5/6 w-full">
-          <img
-            className="h-full w-full object-cover"
-            src="https://cdn.dribbble.com/users/914217/screenshots/4506553/media/7be2be6f43f64c27946d1068a602ece1.gif"
-            alt=""
-          />
+          <LiveTracking />
         </div>
         <div className="min-h-[16.6%] absolute p-2 bg-yellow-300 shadow-inner shadow-gray-200 rounded-t-lg w-full">
           <h3 className="text-center">
@@ -57,7 +84,11 @@ const CaptainRiding = () => {
         ref={rideCompleteRef}
         className="min-h-1/2 absolute bg-white w-[100%] p-2 rounded-t-lg shadow-inner shadow-gray-200"
       >
-        <FinishRide setRideComplete={setRideComplete} />
+        <FinishRide
+          finishRide={finishRide}
+          ride={ride.ride}
+          setRideComplete={setRideComplete}
+        />
       </div>
     </>
   );

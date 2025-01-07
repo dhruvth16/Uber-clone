@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { CaptainDataContext } from "./UserDataContext";
+import { CaptainDataContext } from "./CaptainDataContext";
 
 const CaptainContext = ({ children }) => {
   const [captain, setCaptain] = useState({
@@ -17,6 +17,8 @@ const CaptainContext = ({ children }) => {
       vehicleType: "",
     },
   });
+
+  // console.log("Captain context:", captain);
 
   return (
     <CaptainDataContext.Provider value={{ captain, setCaptain }}>

@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export const CaptainDataContext = createContext({
-  user: {
+  captain: {
     fullname: {
       firstname: "",
       lastname: "",

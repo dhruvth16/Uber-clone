@@ -14,7 +14,7 @@ const CaptainSignUpPage = () => {
   const [color, setColor] = useState("");
   const [plate, setPlate] = useState("");
   const [capacity, setCapacity] = useState("");
-  const [vehicleType, setVehicleType] = useState("motorbike");
+  const [vehicleType, setVehicleType] = useState("bike");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -44,7 +44,9 @@ const CaptainSignUpPage = () => {
         `${import.meta.env.VITE_BASE_URL}/captains/register-captain`,
         captainData
       );
+      // console.log("Response data:", response.data);
       setCaptain(response.data.captain);
+      // console.log("Captain context after update:", response.data.captain);
       navigate("/captainDashboard");
       localStorage.setItem("token", response.data.token);
       alert("Registration successful!");

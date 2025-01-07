@@ -1,7 +1,8 @@
-import { Link } from "react-router";
 import PropTypes from "prop-types";
 
 function FinishRide(props) {
+  console.log(props.ride);
+
   return (
     <>
       <h3 className="text-center">
@@ -12,20 +13,27 @@ function FinishRide(props) {
       </h3>
       <div className=" flex items-center justify-between bg-gray-50 p-2 rounded-lg">
         <div>
-          <p className="font-medium text-sm">Carlsen</p>
-          <p className="text-sm font-semibold">DL 1A 0001</p>
+          <p className="font-medium text-sm capitalize">
+            {props.ride?.user.fullname.firstname + " "}
+            {props.ride?.user.fullname.lastname}
+          </p>
+          <p className="text-sm font-semibold">
+            {props.ride?.captain.vehicle.plate}
+          </p>
         </div>
         <div>
-          <p className="text-sm font-semibold">$10</p>
+          <p className="text-sm font-semibold">₹{props.ride?.fare}</p>
         </div>
       </div>
       <div className="border-[1px] mt-3 border-yellow-300 p-2 rounded-lg relative">
         <h3 className="text-xs text-gray-600">Pick-up</h3>
-        <p className="text-sm font-medium mt-2">480/B, Near Ashok Hotel</p>
+        <p className="text-sm font-medium mt-2">{props.ride?.pickupAddress}</p>
       </div>
       <div className="border-[1px] mt-3 border-yellow-300 p-2 rounded-lg relative">
         <h3 className="text-xs text-gray-600">Drop-off</h3>
-        <p className="text-sm font-medium mt-2">Nataliya Apartment</p>
+        <p className="text-sm font-medium mt-2">
+          {props.ride?.destinationAddress}
+        </p>
       </div>
       <div>
         <span className="text-red-600 font-bold text-[14px]">
@@ -33,12 +41,12 @@ function FinishRide(props) {
         </span>
       </div>
       <div className="w-full mt-1 bg-green-500 rounded-lg text-center p-2">
-        <Link
-          to="/captainDashboard"
+        <button
+          onClick={props.finishRide}
           className="w-full font-bold text-white text-md"
         >
           Finish Ride
-        </Link>
+        </button>
       </div>
     </>
   );
@@ -46,6 +54,8 @@ function FinishRide(props) {
 
 FinishRide.propTypes = {
   setRideComplete: PropTypes.func,
+  ride: PropTypes.object,
+  finishRide: PropTypes.func,
 };
 
 export default FinishRide;

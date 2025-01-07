@@ -19,11 +19,25 @@ function ConfirmRide(props) {
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-center">
-          <img
-            className=" h-24"
-            src="https://www.pngplay.com/wp-content/uploads/8/Uber-PNG-Photos.png"
-            alt=""
-          />
+          {props.activeVehicleFound === "car" ? (
+            <img
+              className=" h-24"
+              src="https://www.pngplay.com/wp-content/uploads/8/Uber-PNG-Photos.png"
+              alt=""
+            />
+          ) : props.activeVehicleFound === "auto" ? (
+            <img
+              className=" h-24"
+              src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png"
+              alt=""
+            />
+          ) : (
+            <img
+              className=" h-24"
+              src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648177797/assets/fc/ddecaa-2eee-48fe-87f0-614aa7cee7d3/original/Uber_Moto_312x208_pixels_Mobile.png"
+              alt=""
+            />
+          )}
         </div>
         <div className="p-2">
           <div className="flex items-center gap-2 p-2 border-b-[1px]">
@@ -32,7 +46,7 @@ function ConfirmRide(props) {
             </div>
             <div>
               <h3 className="font-semibold text-sm">Pick-up Location</h3>
-              <p className="text-xs text-gray-600">123, Lorem Ipsum</p>
+              <p className="text-xs text-gray-600">{props.currLocation}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 p-2 border-b-[1px]">
@@ -41,7 +55,7 @@ function ConfirmRide(props) {
             </div>
             <div>
               <h3 className="font-semibold text-sm">Destination Location</h3>
-              <p className="text-xs text-gray-600">456, Lorem Ipsum</p>
+              <p className="text-xs text-gray-600">{props.destLocation}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 p-2 ">
@@ -49,7 +63,15 @@ function ConfirmRide(props) {
               <i className="ri-currency-line"></i>{" "}
             </div>
             <div>
-              <h3 className="font-semibold text-sm">$20</h3>
+              <h3 className="font-semibold text-sm">
+                ₹
+                {props.activeVehicleFound === "car"
+                  ? props.fare.car
+                  : props.activeVehicleFound === "auto"
+                  ? props.fare.auto
+                  : props.fare.bike}
+              </h3>
+
               <p className="text-xs text-gray-600">Cash</p>
             </div>
           </div>
@@ -59,6 +81,11 @@ function ConfirmRide(props) {
             onClick={() => {
               props.setVehicleFound(true);
               props.setConfirmRide(false);
+              props.createRideDetails(
+                props.currLocation,
+                props.destLocation,
+                props.activeVehicleFound
+              );
             }}
             className="w-full bg-green-600 text-white font-semibold rounded-lg p-1"
           >
@@ -76,6 +103,11 @@ ConfirmRide.propTypes = {
   ]),
   setConfirmRide: PropTypes.func.isRequired,
   setVehicleFound: PropTypes.func.isRequired,
+  currLocation: PropTypes.string.isRequired,
+  destLocation: PropTypes.string.isRequired,
+  fare: PropTypes.number.isRequired,
+  activeVehicleFound: PropTypes.string.isRequired,
+  createRideDetails: PropTypes.func.isRequired,
 };
 
 export default ConfirmRide;

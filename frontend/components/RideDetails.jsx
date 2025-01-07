@@ -1,8 +1,16 @@
-function RideDetails() {
+import Proptypes from "prop-types";
+
+function RideDetails(props) {
   return (
-    <div className="absolute bottom-0 hidden w-full bg-white">
+    <div
+      ref={props.rideDetailsRef}
+      className="absolute bottom-0 w-full bg-white"
+    >
       <div className="w-full p-2 bg-white shadow-inner shadow-gray-200 flex flex-col gap-2 rounded-t-xl">
-        <h4 className="text-center w-full">
+        <h4
+          onClick={() => props.setRideDetails(false)}
+          className="text-center w-full"
+        >
           <i className="ri-arrow-down-wide-line text-xl text-gray-300"></i>
         </h4>
         <div>
@@ -27,10 +35,17 @@ function RideDetails() {
             />
           </div>
         </div>
-        <div className="p-2">
-          <h3 className="text-sm text-gray-600">Driver Name</h3>
-          <h3 className="font-semibold">Vehicle No.</h3>
-          <h3 className="text-sm text-gray-600">Vehicle Details</h3>
+        <div className="p-2 text-right">
+          <h3 className="text-sm text-gray-600">
+            {props.ride?.captain?.fullname.firstname + " "}
+            {props.ride?.captain?.fullname.lastname}
+          </h3>
+          <h3 className="font-semibold">
+            {props.ride?.captain?.vehicle.plate}
+          </h3>
+          {props.ride?.otp ? (
+            <h3 className="text-xs text-gray-600">OTP: {props.ride?.otp}</h3>
+          ) : null}
         </div>
       </div>
       <div className="w-full bg-gray-300 h-[1px]"></div>
@@ -41,15 +56,21 @@ function RideDetails() {
           </div>
           <div>
             <h3 className="font-semibold text-sm">Pick-up Location</h3>
-            <p className="text-xs text-gray-600">123, Lorem Ipsum</p>
+            <p className="text-xs text-gray-600">{props.ride?.pickupAddress}</p>
           </div>
         </div>
         <div>
-          <h3 className="font-semibold">$10</h3>
+          <h3 className="font-semibold">₹{props.ride?.fare}</h3>
         </div>
       </div>
     </div>
   );
 }
+
+RideDetails.propTypes = {
+  rideDetailsRef: Proptypes.object,
+  setRideDetails: Proptypes.func.isRequired,
+  ride: Proptypes.object,
+};
 
 export default RideDetails;

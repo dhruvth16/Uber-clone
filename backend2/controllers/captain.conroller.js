@@ -83,7 +83,8 @@ exports.loginCaptain = async (req, res) => {
 };
 
 exports.getCaptainProfile = async (req, res) => {
-  res.status(200).json({ user: req.user });
+  // console.log(req.captain);
+  res.status(200).json({ captain: req.captain });
 };
 
 exports.logoutCaptain = async (req, res) => {
