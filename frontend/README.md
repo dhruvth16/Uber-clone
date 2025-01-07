@@ -45,9 +45,11 @@ VITE_BASE_URL=your_server_url
 
 ## Usage
 
+```
 User Authentication: Users can sign up and log in to book rides.
 Captain Authentication: Captains can sign up and log in to accept rides.
 Search Locations: Use the search functionality to select pickup and destination locations.
 Live Tracking: Track the ride in real-time on the map.
 Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+```
