@@ -5,17 +5,14 @@ import PropTypes from "prop-types";
 const INITIAL_CENTER = [-74.0242, 40.6941];
 const INITIAL_ZOOM = 10.12;
 
-function LiveTracking(props) {
-  console.log("Live tracking: ", props.rideConfrimed);
-
+function LiveTracking() {
   const mapRef = useRef();
   const mapContainerRef = useRef();
   const [center, setCenter] = useState(INITIAL_CENTER);
   const [zoom, setZoom] = useState(INITIAL_ZOOM);
 
   useEffect(() => {
-    mapboxgl.accessToken =
-      "pk.eyJ1IjoiZGhydXZ0aDE2IiwiYSI6ImNtNTR2YWplbzMxbWsybnM3OGI1cnBodmoifQ.Nn5_K_OT-tCwUJKLuzvUWA";
+    mapboxgl.accessToken = `${import.meta.env.VITE_MAP_ACCESS_TOKEN}`;
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       center: center,
