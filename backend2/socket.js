@@ -2,6 +2,17 @@ const socketIO = require("socket.io");
 const userModel = require("./models/user.model");
 const captainModel = require("./models/captain.model");
 
+const app = express();
+
+// CORS configuration
+app.use(
+  cors({
+    origin: "https://uber-clone-flax-one.vercel.app", // Your frontend's URL
+    methods: ["GET", "POST"],
+    credentials: true, // Enable cookies if needed
+  })
+);
+
 let io;
 
 function initializeSocket(server) {
@@ -9,7 +20,6 @@ function initializeSocket(server) {
     cors: {
       origin: "https://uber-clone-flax-one.vercel.app/",
       methods: ["GET", "POST"],
-      credentials: true,
     },
   });
 
