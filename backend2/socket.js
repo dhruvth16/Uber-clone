@@ -1,13 +1,15 @@
+const express = require("express");
+const cors = require("cors");
 const socketIO = require("socket.io");
 const userModel = require("./models/user.model");
 const captainModel = require("./models/captain.model");
 
 const app = express();
 
-// CORS configuration
+// Correct CORS configuration
 app.use(
   cors({
-    origin: "https://uber-clone-flax-one.vercel.app", // Your frontend's URL
+    origin: "https://uber-clone-flax-one.vercel.app", // No trailing slash
     methods: ["GET", "POST"],
     credentials: true, // Enable cookies if needed
   })
@@ -18,7 +20,7 @@ let io;
 function initializeSocket(server) {
   io = socketIO(server, {
     cors: {
-      origin: "https://uber-clone-flax-one.vercel.app/",
+      origin: "https://uber-clone-flax-one.vercel.app", // No trailing slash
       methods: ["GET", "POST"],
     },
   });
