@@ -30,8 +30,8 @@ const Riding = () => {
   }, [newSocket, navigate]);
 
   return (
-    <div className=" max-h-screen">
-      <div>
+    <div className="h-screen">
+      <div className="h-screen w-full">
         <LiveTracking />
       </div>
       <Link

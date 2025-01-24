@@ -120,7 +120,7 @@ function AcceptRide(props) {
 
       <form onSubmit={submitHandler}>
         <h3 className="mt-5 font-semibold text-md">Enter the OTP</h3>
-        <div className="flex justify-center gap-3 mb-5">
+        <div className="flex justify-center gap-2 mb-5">
           {Array.from({ length: 6 }).map((_, index) => (
             <input
               key={index}
@@ -130,7 +130,7 @@ function AcceptRide(props) {
               ref={(el) => (inputRefs.current[index] = el)}
               onChange={(e) => handleInputChange(e.target.value, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
-              className="w-12 h-12 text-center text-lg border-2 border-gray-300 rounded-md bg-gray-100 focus:outline-none"
+              className="w-10 h-10 text-center text-lg border-2 border-gray-300 rounded-md bg-gray-100 focus:outline-none"
             />
           ))}
         </div>

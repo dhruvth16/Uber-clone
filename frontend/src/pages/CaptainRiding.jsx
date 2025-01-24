@@ -65,10 +65,10 @@ const CaptainRiding = () => {
             <i className="ri-arrow-left-line text-lg"></i>
           </Link>
         </div>
-        <div className="h-5/6 w-full">
+        <div className="h-screen w-full">
           <LiveTracking />
         </div>
-        <div className="min-h-[16.6%] absolute p-2 bg-yellow-300 shadow-inner shadow-gray-200 rounded-t-lg w-full">
+        <div className="min-h-[25%] absolute bottom-0 p-2 bg-yellow-300 shadow-inner shadow-gray-200 rounded-t-lg w-full">
           <h3 className="text-center">
             <i
               onClick={() => setRideComplete(true)}

@@ -157,7 +157,7 @@ function CaptainDashboard() {
           </Link>
         </div>
         <LiveTracking rideConfirmed={rideConfirmed} />
-        <div className="h-1/2 absolute p-2 bg-white shadow-inner shadow-gray-200 rounded-t-lg w-full">
+        <div className="h-1/2 absolute bottom-0 p-2 bg-white shadow-inner shadow-gray-200 rounded-t-lg w-full">
           <div className="absolute h-14 w-14 top-[-35px] bg-gray-100 flex items-center justify-center rounded-full">
             <img
               className="h-10 w-10 rounded-full"
