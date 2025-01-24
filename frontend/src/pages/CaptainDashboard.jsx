@@ -27,7 +27,7 @@ function CaptainDashboard() {
     // console.log("Captain: ", captain);
     sendMessage("join", { userType: "captain", userId: captain._id });
 
-    const updateLocation = () => {
+    const updateLocation = (() => {
       navigator.geolocation.getCurrentPosition((position) => {
         const location = {
           lng: position.coords.longitude,
@@ -39,10 +39,9 @@ function CaptainDashboard() {
           location,
         });
       });
-    };
+    })();
     const locationInterval = setInterval(updateLocation, 10000);
 
-    updateLocation();
     return () => {
       clearInterval(locationInterval);
     };
