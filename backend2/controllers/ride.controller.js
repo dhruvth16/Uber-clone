@@ -22,6 +22,7 @@ exports.createRide = async (req, res) => {
     const pickUpCoordinates = await mapService.getAdressCoordinate(
       pickupAddress
     );
+    console.log("Pick up: ", pickUpCoordinates);
     // const distanceTime = await mapService.getDistanceTime(
     //   `${pickUpCoordinates[0].lng},${pickUpCoordinates[0].lat}`,
     //   destinationAddress
@@ -32,9 +33,9 @@ exports.createRide = async (req, res) => {
       pickUpCoordinates[0].lng,
       pickUpCoordinates[0].lat,
       // distanceTime.distance,
-      50
+      5
     );
-    // console.log("Captains: ", captainInRadius);
+    console.log("Captains: ", captainInRadius);
 
     ride.otp = "";
     const rideDetailsUser = await rideModel

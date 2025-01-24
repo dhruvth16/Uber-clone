@@ -40,8 +40,12 @@ function CaptainDashboard() {
         });
       });
     };
-    // const locationInterval = setInterval(updateLocation, 10000);
+    const locationInterval = setInterval(updateLocation, 10000);
+
     updateLocation();
+    return () => {
+      clearInterval(locationInterval);
+    };
   }, [sendMessage, captain._id]);
 
   newSocket.on("new-ride", (data) => {
@@ -64,7 +68,7 @@ function CaptainDashboard() {
           },
         }
       );
-      // console.log("Ride Confirmed: ", response.data.ride);
+      console.log("Ride Confirmed: ", response.data.ride);
       if (response.status === 200) {
         setAcceptRide(true);
         setRidePopUp(true);
@@ -143,7 +147,7 @@ function CaptainDashboard() {
   return (
     <>
       <div className="h-screen w-full">
-        <div className="h-12 absolute z-10 p-2 flex items-center gap-4 justify-between w-full">
+        <div className="h-12 absolute p-2 flex items-center gap-4 justify-between w-full">
           <h3 className="font-semibold text-xl">Uber</h3>
           <Link
             to="/captainLogin"
@@ -152,10 +156,8 @@ function CaptainDashboard() {
             <i className="ri-arrow-left-line text-lg"></i>
           </Link>
         </div>
-        <div className="h-2/3 w-full">
-          <LiveTracking rideConfirmed={rideConfirmed} />
-        </div>
-        <div className="h-1/3 absolute p-2 bg-white shadow-inner shadow-gray-200 rounded-t-lg w-full">
+        <LiveTracking rideConfirmed={rideConfirmed} />
+        <div className="h-1/2 absolute p-2 bg-white shadow-inner shadow-gray-200 rounded-t-lg w-full">
           <div className="absolute h-14 w-14 top-[-35px] bg-gray-100 flex items-center justify-center rounded-full">
             <img
               className="h-10 w-10 rounded-full"

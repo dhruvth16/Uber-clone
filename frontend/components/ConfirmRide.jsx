@@ -105,7 +105,7 @@ ConfirmRide.propTypes = {
   setVehicleFound: PropTypes.func.isRequired,
   currLocation: PropTypes.string.isRequired,
   destLocation: PropTypes.string.isRequired,
-  fare: PropTypes.number.isRequired,
+  fare: PropTypes.object.isRequired,
   activeVehicleFound: PropTypes.string.isRequired,
   createRideDetails: PropTypes.func.isRequired,
 };

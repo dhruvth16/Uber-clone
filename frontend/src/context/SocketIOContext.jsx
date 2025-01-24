@@ -7,8 +7,8 @@ export const SocketIOContext = createContext();
 
 export const SocketProvider = ({ children }) => {
   const newSocket = io(import.meta.env.VITE_BASE_URL, {
-    withCredentials: true, // Allow cookies if needed
-    transports: ["websocket", "polling"], // Ensure all transports are allowed
+    withCredentials: true,
+    transports: ["websocket", "polling"],
   });
 
   useEffect(() => {

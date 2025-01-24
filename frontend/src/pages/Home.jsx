@@ -246,10 +246,8 @@ function Home() {
 
   return (
     <>
-      <div className="h-screen bg-red-200 w-full">
-        <h1 className="absolute z-10 left-4 top-3 font-semibold text-2xl">
-          Uber
-        </h1>
+      <div className="h-screen w-full">
+        <h1 className="absolute left-4 top-3 font-semibold text-xl">Uber</h1>
 
         <LiveTracking />
         <form
@@ -257,7 +255,7 @@ function Home() {
           onSubmit={(e) => submitHandler(e)}
           className="absolute bottom-0 w-full p-3 h-[30%] bg-white flex flex-col gap-2 rounded-t-xl"
         >
-          <div className="h-12 w-[3px] left-7 top-[80px] bg-black absolute"></div>
+          <div className="h-12 w-[3px] left-7 top-[65px] bg-black absolute"></div>
 
           <div className="flex">
             <div>
@@ -272,7 +270,7 @@ function Home() {
             </div>
           </div>
           <div>
-            <div className="h-2 w-2 absolute left-[31px] top-[77px] bg-black rounded-full"></div>
+            <div className="h-2 w-2 absolute left-[26px] top-[60px] bg-black rounded-full"></div>
             <input
               onClick={() => {
                 setInputPanelOpen(true);
@@ -283,14 +281,14 @@ function Home() {
                 setCurrLocation(e.target.value);
                 fetchSuggestions(e.target.value, "pickup");
               }}
-              className="bg-gray-200 px-8 py-2 rounded-lg  placeholder:text-sm placeholder:text-slate-500"
+              className="bg-gray-200 px-8 py-2 rounded-lg w-full placeholder:text-sm placeholder:text-slate-500"
               type="text"
               placeholder="Enter your pick-up location"
               required
             />
           </div>
           <div>
-            <div className="h-2 w-2 absolute left-[31px] top-[138px] border-2 border-gray-500"></div>
+            <div className="h-2 w-2 absolute left-[26px] top-[112px] border-2 border-gray-500"></div>
             <input
               onClick={() => {
                 setInputPanelOpen(true);
@@ -301,7 +299,7 @@ function Home() {
                 setDestLocation(e.target.value);
                 fetchSuggestions(e.target.value, "destination");
               }}
-              className="bg-gray-200 px-8 py-2 rounded-lg placeholder:text-sm placeholder:text-slate-500"
+              className="bg-gray-200 px-8 py-2 w-full rounded-lg placeholder:text-sm placeholder:text-slate-500"
               type="text"
               placeholder="Enter your destination"
               required

@@ -109,7 +109,7 @@ LookingForDriver.propTypes = {
   currLocation: PropTypes.string.isRequired,
   destLocation: PropTypes.string.isRequired,
   activeVehicleFound: PropTypes.string.isRequired,
-  fare: PropTypes.number.isRequired,
+  fare: PropTypes.object.isRequired,
 };
 
 export default LookingForDriver;

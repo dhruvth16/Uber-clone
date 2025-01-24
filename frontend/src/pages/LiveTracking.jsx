@@ -37,7 +37,7 @@ function LiveTracking() {
   return (
     <>
       <div
-        className="h-screen w-full object-cover"
+        className="h-3/4 w-full object-cover"
         id="map-container"
         ref={mapContainerRef}
       />
@@ -46,7 +46,7 @@ function LiveTracking() {
 }
 
 LiveTracking.propTypes = {
-  rideConfrimed: PropTypes.object.isRequired,
+  rideConfrimed: PropTypes.object,
 };
 
 export default LiveTracking;

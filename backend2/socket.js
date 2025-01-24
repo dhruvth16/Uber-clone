@@ -6,10 +6,10 @@ const captainModel = require("./models/captain.model");
 
 const app = express();
 
-// Correct CORS configuration
 app.use(
   cors({
-    origin: "https://uber-clone-flax-one.vercel.app", // No trailing slash
+    origin: "https://uber-clone-flax-one.vercel.app",
+    // origin: "*",
     methods: ["GET", "POST"],
     credentials: true, // Enable cookies if needed
   })
@@ -20,7 +20,8 @@ let io;
 function initializeSocket(server) {
   io = socketIO(server, {
     cors: {
-      origin: "https://uber-clone-flax-one.vercel.app", // No trailing slash
+      origin: "https://uber-clone-flax-one.vercel.app",
+      // origin: "*",
       methods: ["GET", "POST"],
     },
   });

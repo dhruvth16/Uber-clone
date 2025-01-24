@@ -128,7 +128,7 @@ SelectRide.propTypes = {
   ]),
   setSelectedRide: PropTypes.func.isRequired,
   setConfirmRide: PropTypes.func.isRequired,
-  fare: PropTypes.number.isRequired,
+  fare: PropTypes.object.isRequired,
   setActiveVehicleFound: PropTypes.func.isRequired,
 };
 
