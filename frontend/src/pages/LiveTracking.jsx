@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import PropTypes from "prop-types";
 
 const INITIAL_ZOOM = 10.12;
 const INITIAL_CENTER = [77.216721, 28.6448];
@@ -13,33 +14,12 @@ function LiveTracking() {
 
   useEffect(() => {
     mapboxgl.accessToken = `${import.meta.env.VITE_MAP_ACCESS_TOKEN}`;
+
+    // Initialize the Mapbox map
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      center: center,
-      zoom: zoom,
-    });
-
-    markerRef.current = new mapboxgl.Marker()
-      .setLngLat(INITIAL_CENTER)
-      .addTo(mapRef.current);
-
-    mapRef.current.on("load", () => {
-      const customMarker = document.createElement("div");
-      customMarker.style.backgroundColor = "red";
-      customMarker.style.width = "20px";
-      customMarker.style.height = "20px";
-      customMarker.style.borderRadius = "50%";
-      customMarker.style.boxShadow = "0 0 5px rgba(0,0,0,0.5)";
-
-      markerRef.current = new mapboxgl.Marker({ element: customMarker })
-        .setLngLat(INITIAL_CENTER)
-        .addTo(mapRef.current);
-
-      mapRef.current.on("click", (e) => {
-        const { lng, lat } = e.lngLat;
-        markerRef.current.setLngLat([lng, lat]);
-        setCenter([lng, lat]);
-      });
+      center: INITIAL_CENTER,
+      zoom: INITIAL_ZOOM,
     });
 
     mapRef.current.on("move", () => {
@@ -51,6 +31,11 @@ function LiveTracking() {
 
     mapRef.current.on("click", (e) => {
       const { lng, lat } = e.lngLat;
+      const lngLat = [lng, lat];
+      markerRef.current = new mapboxgl.Marker()
+        .setLngLat(lngLat)
+        .addTo(mapRef.current);
+
       markerRef.current.setLngLat([lng, lat]);
       setCenter([lng, lat]);
     });
@@ -63,12 +48,16 @@ function LiveTracking() {
   return (
     <>
       <div
-        className="h-3/4 w-full object-cover"
+        className="h-3/4 w-full object-cover absolute"
         id="map-container"
-        ref={mapContainerRef}
+        ref={mapContainerRef} // Attach the map container ref to the div
       />
     </>
   );
 }
+
+LiveTracking.propTypes = {
+  lngLat: PropTypes.object.isRequired,
+};
 
 export default LiveTracking;

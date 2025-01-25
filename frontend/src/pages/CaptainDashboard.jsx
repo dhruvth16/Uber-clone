@@ -15,6 +15,7 @@ function CaptainDashboard() {
   const [ridePopUp, setRidePopUp] = useState(false);
   const [rideConfirmed, setRideConfirmed] = useState(null);
   const [ride, setRide] = useState(null);
+  // const [lngLat, setLngLat] = useState({});
   const acceptRideRef = useRef(null);
   const ignoreRideRef = useRef(null);
   const ridePopUpRef = useRef(null);
@@ -27,24 +28,26 @@ function CaptainDashboard() {
     // console.log("Captain: ", captain);
     sendMessage("join", { userType: "captain", userId: captain._id });
 
-    const updateLocation = (() => {
+    (function updateLocation() {
       navigator.geolocation.getCurrentPosition((position) => {
         const location = {
           lng: position.coords.longitude,
           ltd: position.coords.latitude,
         };
-        // console.log("Location: ", location, "Captain: ", captain._id);
+        console.log("Location: ", location, "Captain: ", captain._id);
+        // setLngLat(location);
+        // console.log(lngLat);
         sendMessage("update-location-captain", {
           captainId: captain._id,
           location,
         });
       });
     })();
-    const locationInterval = setInterval(updateLocation, 10000);
+    // const locationInterval = setInterval(updateLocation, 10000);
 
-    return () => {
-      clearInterval(locationInterval);
-    };
+    // return () => {
+    //   clearInterval(locationInterval);
+    // };
   }, [sendMessage, captain._id]);
 
   newSocket.on("new-ride", (data) => {
@@ -155,7 +158,7 @@ function CaptainDashboard() {
             <i className="ri-arrow-left-line text-lg"></i>
           </Link>
         </div>
-        <LiveTracking rideConfirmed={rideConfirmed} />
+        <LiveTracking />
         <div className="h-1/2 absolute bottom-0 p-2 bg-white shadow-inner shadow-gray-200 rounded-t-lg w-full">
           <div className="absolute h-14 w-14 top-[-35px] bg-gray-100 flex items-center justify-center rounded-full">
             <img
